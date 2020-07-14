@@ -13,6 +13,7 @@ import passport from 'passport';
 
 import { MONGODB_URI, SESSION_SECRET } from './config/secret';
 import { passportConfig } from './config/passport';
+import userRouter from './routes/userRouter';
 class Server {
     // Express App 필드 선언
     private app: Application;
@@ -71,6 +72,7 @@ class Server {
 
     // 라우터
     private routes (): void {
+        this.app.use('/api/user', userRouter);
     }
 
     // 서버 구동
@@ -78,6 +80,9 @@ class Server {
         this.app.use(errorHandler());
         this.app.listen(5000, () => {
             console.log('####### App is running!! #######');
+        });
+        this.app.get('/test', (req: Request, res: Response) => {
+            res.status(200).json({ message: 'test' });
         });
     }
 }
