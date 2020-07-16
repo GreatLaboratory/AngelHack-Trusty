@@ -4,9 +4,11 @@ import { ProductDocument, Product } from '../models/product/Product';
 
 // POST -> 상품 등록하기
 export const postProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { sellerId, price, name, productArea, description, stock } = req.body;
-    const file = req.file as Express.Multer.File;
-    const productImage: string = file ? file.location : '';
+    const { sellerId, price, name, productArea, description, stock, category } = req.body;
+    const files: any = req.files;
+    const mainImage: string = files['mainImage'][0].location;
+    const subImages: string[] = [];
+    files['subImages'].map((img: any) => subImages.push(`${ img.location }`));
     try {
         const newProduct: ProductDocument = new Product({
             sellerId,
@@ -15,7 +17,9 @@ export const postProduct = async (req: Request, res: Response, next: NextFunctio
             productArea,
             description,
             stock,
-            image: productImage
+            category,
+            mainImage,
+            subImages
         });
         await Product.create(newProduct);
         res.status(201).json({ message: '성공적으로 상품을 등록했습니다.', data: newProduct });
