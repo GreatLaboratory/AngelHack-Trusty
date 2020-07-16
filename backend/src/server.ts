@@ -15,7 +15,7 @@ import { MONGODB_URI, SESSION_SECRET } from './config/secret';
 import { passportConfig } from './config/passport';
 import userRouter from './routes/userRouter';
 import sellerRouter from './routes/sellerRouter';
-// import productRouter from './routes/productRouter';
+import productRouter from './routes/productRouter';
 // import orderRouter from './routes/orderRouter';
 // import reviewRouter from './routes/reviewRouter';
 class Server {
@@ -78,7 +78,7 @@ class Server {
     private routes (): void {
         this.app.use('/api/user', userRouter);
         this.app.use('/api/seller', sellerRouter);
-        // this.app.use('/api/product', productRouter);
+        this.app.use('/api/product', productRouter);
         // this.app.use('/api/order', orderRouter);
         // this.app.use('/api/review', reviewRouter);
     }

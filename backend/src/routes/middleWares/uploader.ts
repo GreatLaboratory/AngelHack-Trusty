@@ -25,3 +25,18 @@ export const profileImageUploader: Instance = multer({
         },
     })
 });
+export const productImageUploader: Instance = multer({
+    storage: multerS3({
+        s3,
+        bucket: 'mans-buy/products',
+        acl: 'public-read',
+        contentType: AUTO_CONTENT_TYPE,
+        metadata: (req: Request, file: Express.Multer.File, cb) => {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: (req: Request, file: Express.Multer.File, cb) => {
+            const ext = path.extname(file.originalname);
+            cb(null, path.basename(file.originalname, ext) + '_trusty_' + new Date().valueOf() + ext);
+        },
+    })
+});
