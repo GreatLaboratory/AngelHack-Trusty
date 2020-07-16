@@ -11,7 +11,7 @@ export type ProductDocument = Document & {
     mainImage: string; // 메인 사진
     subImages: string[]; // 서브 사진
     sellerImage: string;  // 판매자 사진
-    price: string;  // 가격
+    price: number;  // 가격
     productArea: string;  // 산지
     description: string;  // 설명
     stock: number;  // 재고 수량
@@ -35,7 +35,7 @@ const productSchema = new Schema({
     mainImage: String,
     subImages: Array,
     sellerImage: String,
-    price: String,
+    price: Number,
     productArea: String,
     description: String,
     category: String,

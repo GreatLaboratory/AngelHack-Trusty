@@ -13,7 +13,7 @@ export const postProduct = async (req: Request, res: Response, next: NextFunctio
         const newProduct: ProductDocument = new Product({
             sellerId,
             name,
-            price,
+            price: parseInt(price),
             productArea,
             description,
             stock,
@@ -44,21 +44,51 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
 
 // GET -> 상품 리스트 조회하기
 export const getProductList = async (req: Request, res: Response, next: NextFunction) => {
-    const { page, limit } = req.query;
+    const { page, limit, sort } = req.query;
     try {
         let productList: ProductDocument[];
-        if (page && limit){
-            productList = await Product.find().populate('sellerId')
-                .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
-        } else if (!page && limit) {
-            productList = await Product.find().populate('sellerId')
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
+        if (sort === 'lowPrice') {
+            if (page && limit){
+                productList = await Product.find().sort('price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('price').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        } else if (sort === 'highPrice') {
+            if (page && limit){
+                productList = await Product.find().sort('-price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('-price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('-price').populate('sellerId');
+                res.status(200).json(productList);
+            }
         } else {
-            productList = await Product.find().populate('sellerId');
-            res.status(200).json(productList);
+            if (page && limit){
+                productList = await Product.find().sort('-createdAt').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('-createdAt').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('-createdAt').populate('sellerId');
+                res.status(200).json(productList);
+            }
         }
     } catch (err) {
         console.log(err);
@@ -68,22 +98,52 @@ export const getProductList = async (req: Request, res: Response, next: NextFunc
 
 // GET -> 카테고리별 상품 리스트 조회하기
 export const getCategoryProductList = async (req: Request, res: Response, next: NextFunction) => {
-    const { page, limit } = req.query;
+    const { page, limit, sort } = req.query;
     const { category } = req.params;
     try {
         let productList: ProductDocument[];
-        if (page && limit){
-            productList = await Product.find({ category }).populate('sellerId')
-                .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
-        } else if (!page && limit) {
-            productList = await Product.find({ category }).populate('sellerId')
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
+        if (sort === 'lowPrice') {
+            if (page && limit){
+                productList = await Product.find({ category }).sort('price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('price').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        } else if (sort === 'highPrice') {
+            if (page && limit){
+                productList = await Product.find({ category }).sort('-price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('-price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('-price').populate('sellerId');
+                res.status(200).json(productList);
+            }
         } else {
-            productList = await Product.find({ category }).populate('sellerId');
-            res.status(200).json(productList);
+            if (page && limit){
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId');
+                res.status(200).json(productList);
+            }
         }
     } catch (err) {
         console.log(err);
