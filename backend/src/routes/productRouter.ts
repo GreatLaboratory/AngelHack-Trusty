@@ -20,6 +20,9 @@ class ProductRouter {
         
         // 상품 리스트 조회하기
         this.router.get('/list', getProductList);
+        
+        // 카테고리별 상품 리스트 조회하기
+        this.router.get('/categoryList/:category', getProductList);
     }
 }
 
