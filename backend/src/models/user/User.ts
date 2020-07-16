@@ -11,8 +11,13 @@ export type UserDocument = PassportLocalDocument & {
 
     id: string; // 사용자 입력 아이디
     name: string;  // 사용자 이름
-    phoneNum: string;  // 프로필 사진
-    profileImage: boolean;  // 핸드폰 번호
+    storeName: string;  // 상호명
+    address: string; // 주소
+    phoneNum: string;  // 핸드폰 번호
+    profileImage: string;  // 프로필 사진
+    
+
+    createdAt: Date; // 가입 날짜
 }
 
 const userSchema = new Schema({
@@ -36,8 +41,14 @@ const userSchema = new Schema({
     ],
     id: String,
     name: String,  
+    storeName: String,  
+    address: String,  
     phoneNum: String,  
-    profileImage: String,  
+    profileImage: String, 
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    } 
 });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'id' });
