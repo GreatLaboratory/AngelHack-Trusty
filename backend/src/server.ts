@@ -14,6 +14,10 @@ import passport from 'passport';
 import { MONGODB_URI, SESSION_SECRET } from './config/secret';
 import { passportConfig } from './config/passport';
 import userRouter from './routes/userRouter';
+import sellerRouter from './routes/sellerRouter';
+// import productRouter from './routes/productRouter';
+// import orderRouter from './routes/orderRouter';
+// import reviewRouter from './routes/reviewRouter';
 class Server {
     // Express App 필드 선언
     private app: Application;
@@ -73,6 +77,10 @@ class Server {
     // 라우터
     private routes (): void {
         this.app.use('/api/user', userRouter);
+        this.app.use('/api/seller', sellerRouter);
+        // this.app.use('/api/product', productRouter);
+        // this.app.use('/api/order', orderRouter);
+        // this.app.use('/api/review', reviewRouter);
     }
 
     // 서버 구동
