@@ -10,3 +10,13 @@ export type AuthenticatedType = {
   authenticated: string | null;
 }
 
+export type SidebarItemType = {
+  value: string;
+  path: string;
+}
+
+export enum UserType {
+  USER,
+  SELLER,
+}
+
