@@ -8,7 +8,7 @@ export const login = passport.authenticate('seller');
 
 // POST -> 회원가입하기
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
-    const { id, name, phoneNum, mainItem, productArea, password } = req.body;
+    const { id, name, phoneNum, mainItem, productArea, password, bankName, accountNum } = req.body;
     const file = req.file as Express.Multer.File;
     const profileImage: string = file ? file.location : '';
     try {
@@ -20,7 +20,9 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
                 phoneNum,
                 mainItem,
                 productArea,
-                profileImage 
+                profileImage,
+                bankName,
+                accountNum
             });
             await Seller.register(sellerInfo, password);
             res.status(201).json({ message: '성공적으로 회원가입하였습니다.', data: sellerInfo });
