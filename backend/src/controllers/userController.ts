@@ -94,3 +94,17 @@ export const verifyCode  = async (req: Request, res: Response, next: NextFunctio
         next(err);
     }
 };
+
+// PUT -> 사용자 정보 수정하기
+export const modifyUserInfo  = async (req: Request, res: Response, next: NextFunction)=> {
+    const { userId } = req.params;
+    const { name, storeName, address, phoneNum } = req.body;
+    try {
+        const updatedUser: UserDocument | null = await User.findByIdAndUpdate(userId, { name, storeName, address, phoneNum });
+        if (updatedUser) res.status(200).json({ message: '성공적으로 사용자 정보가 수정되었습니다.', data: updatedUser });
+        else res.status(200).json({ message: '해당하는 아이디의 사용자가 존재하지 않습니다.' });
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+};

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 
-import { login, signUp, sendCodeToPhone, verifyCode } from '../controllers/userController';
+import { login, signUp, sendCodeToPhone, verifyCode, modifyUserInfo } from '../controllers/userController';
 import { profileImageUploader } from '../routes/middleWares/uploader';
 
 class UserRouter {
@@ -27,6 +27,8 @@ class UserRouter {
         // 인증번호 인증
         this.router.post('/auth/verifyCode', verifyCode);
             
+        // 사용자 정보 수정하기
+        this.router.put('/:userId', modifyUserInfo);
     }
 }
 

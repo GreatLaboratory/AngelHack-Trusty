@@ -4,18 +4,22 @@ import { ProductDocument, Product } from '../models/product/Product';
 
 // POST -> 상품 등록하기
 export const postProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { sellerId, price, name, productArea, description, stock } = req.body;
-    const file = req.file as Express.Multer.File;
-    const productImage: string = file ? file.location : '';
+    const { sellerId, price, name, productArea, description, stock, category } = req.body;
+    const files: any = req.files;
+    const mainImage: string = files['mainImage'][0].location;
+    const subImages: string[] = [];
+    files['subImages'].map((img: any) => subImages.push(`${ img.location }`));
     try {
         const newProduct: ProductDocument = new Product({
             sellerId,
             name,
-            price,
+            price: parseInt(price),
             productArea,
             description,
             stock,
-            image: productImage
+            category,
+            mainImage,
+            subImages
         });
         await Product.create(newProduct);
         res.status(201).json({ message: '성공적으로 상품을 등록했습니다.', data: newProduct });
@@ -40,21 +44,106 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
 
 // GET -> 상품 리스트 조회하기
 export const getProductList = async (req: Request, res: Response, next: NextFunction) => {
-    const { page, limit } = req.query;
+    const { page, limit, sort } = req.query;
     try {
         let productList: ProductDocument[];
-        if (page && limit){
-            productList = await Product.find().populate('sellerId')
-                .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
-        } else if (!page && limit) {
-            productList = await Product.find().populate('sellerId')
-                .limit(parseInt(limit.toString()));
-            res.status(200).json(productList);
+        if (sort === 'lowPrice') {
+            if (page && limit){
+                productList = await Product.find().sort('price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('price').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        } else if (sort === 'highPrice') {
+            if (page && limit){
+                productList = await Product.find().sort('-price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('-price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('-price').populate('sellerId');
+                res.status(200).json(productList);
+            }
         } else {
-            productList = await Product.find().populate('sellerId');
-            res.status(200).json(productList);
+            if (page && limit){
+                productList = await Product.find().sort('-createdAt').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find().sort('-createdAt').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find().sort('-createdAt').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+};
+
+// GET -> 카테고리별 상품 리스트 조회하기
+export const getCategoryProductList = async (req: Request, res: Response, next: NextFunction) => {
+    const { page, limit, sort } = req.query;
+    const { category } = req.params;
+    try {
+        let productList: ProductDocument[];
+        if (sort === 'lowPrice') {
+            if (page && limit){
+                productList = await Product.find({ category }).sort('price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('price').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        } else if (sort === 'highPrice') {
+            if (page && limit){
+                productList = await Product.find({ category }).sort('-price').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('-price').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('-price').populate('sellerId');
+                res.status(200).json(productList);
+            }
+        } else {
+            if (page && limit){
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId')
+                    .skip((parseInt(limit.toString()) * parseInt(page.toString())) - parseInt(limit.toString()))
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else if (!page && limit) {
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId')
+                    .limit(parseInt(limit.toString()));
+                res.status(200).json(productList);
+            } else {
+                productList = await Product.find({ category }).sort('-createdAt').populate('sellerId');
+                res.status(200).json(productList);
+            }
         }
     } catch (err) {
         console.log(err);

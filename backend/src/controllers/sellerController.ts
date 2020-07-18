@@ -8,7 +8,7 @@ export const login = passport.authenticate('seller');
 
 // POST -> 회원가입하기
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
-    const { id, name, phoneNum, storeName, address, password } = req.body;
+    const { id, name, phoneNum, mainItem, productArea, password } = req.body;
     const file = req.file as Express.Multer.File;
     const profileImage: string = file ? file.location : '';
     try {
@@ -18,8 +18,8 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
                 id,
                 name,
                 phoneNum,
-                storeName,
-                address,
+                mainItem,
+                productArea,
                 profileImage 
             });
             await Seller.register(sellerInfo, password);

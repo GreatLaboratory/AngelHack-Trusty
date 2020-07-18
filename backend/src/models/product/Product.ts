@@ -8,12 +8,14 @@ export type ProductDocument = Document & {
     reviewIdList: string[];  // 해당 상품의 리뷰 아이디 리스트
 
     name: string;  // 이름
-    image: string; // 상품 사진
+    mainImage: string; // 메인 사진
+    subImages: string[]; // 서브 사진
     sellerImage: string;  // 판매자 사진
-    price: string;  // 가격
+    price: number;  // 가격
     productArea: string;  // 산지
     description: string;  // 설명
     stock: number;  // 재고 수량
+    category: string; // 카테고리
 
     createdAt: Date;  // 상품 등록날짜
 }
@@ -30,11 +32,13 @@ const productSchema = new Schema({
         }
     ],
     name: String,
-    image: String,
+    mainImage: String,
+    subImages: Array,
     sellerImage: String,
-    price: String,
+    price: Number,
     productArea: String,
     description: String,
+    category: String,
     stock: Number,
     createdAt: {
         type: Date,
