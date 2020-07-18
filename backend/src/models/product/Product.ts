@@ -10,11 +10,9 @@ export type ProductDocument = Document & {
     name: string;  // 이름
     mainImage: string; // 메인 사진
     subImages: string[]; // 서브 사진
-    sellerImage: string;  // 판매자 사진
     price: number;  // 가격
     productArea: string;  // 산지
     description: string;  // 설명
-    stock: number;  // 재고 수량
     category: string; // 카테고리
 
     createdAt: Date;  // 상품 등록날짜
@@ -34,12 +32,10 @@ const productSchema = new Schema({
     name: String,
     mainImage: String,
     subImages: Array,
-    sellerImage: String,
     price: Number,
     productArea: String,
     description: String,
     category: String,
-    stock: Number,
     createdAt: {
         type: Date,
         default: Date.now()

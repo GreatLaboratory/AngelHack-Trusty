@@ -6,7 +6,6 @@ export type UserDocument = PassportLocalDocument & {
     _id: string;  // 고유 아이디
 
     orderIdList: string[];
-    cartIdList: string[];
     reviewIdList: string[];
 
     id: string; // 사용자 입력 아이디
@@ -25,12 +24,6 @@ const userSchema = new Schema({
         {
             type: ObjectId,
             ref: 'Order'
-        }
-    ],
-    cartIdList: [
-        {
-            type: ObjectId,
-            ref: 'Cart'
         }
     ],
     reviewIdList: [

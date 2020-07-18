@@ -1,28 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { ProductDocument, Product } from '../models/product/Product';
+import { Seller, SellerDocument } from '../models/user/Seller';
 
 // POST -> 상품 등록하기
 export const postProduct = async (req: Request, res: Response, next: NextFunction) => {
-    const { sellerId, price, name, productArea, description, stock, category } = req.body;
+    const { sellerId, price, name, description, category } = req.body;
     const files: any = req.files;
     const mainImage: string = files['mainImage'][0].location;
     const subImages: string[] = [];
     files['subImages'].map((img: any) => subImages.push(`${ img.location }`));
     try {
-        const newProduct: ProductDocument = new Product({
-            sellerId,
-            name,
-            price: parseInt(price),
-            productArea,
-            description,
-            stock,
-            category,
-            mainImage,
-            subImages
-        });
-        await Product.create(newProduct);
-        res.status(201).json({ message: '성공적으로 상품을 등록했습니다.', data: newProduct });
+        const seller: SellerDocument | null = await Seller.findById(sellerId);
+        if (seller) {
+            const newProduct: ProductDocument = new Product({
+                sellerId,
+                name,
+                price: parseInt(price),
+                productArea: seller.address,
+                description,
+                category,
+                mainImage,
+                subImages
+            });
+            await Product.create(newProduct);
+            res.status(201).json({ message: '성공적으로 상품을 등록했습니다.', data: newProduct });
+        }
     } catch (err) {
         console.log(err);
         next(err);
