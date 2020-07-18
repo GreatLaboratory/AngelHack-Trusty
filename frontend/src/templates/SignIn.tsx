@@ -1,11 +1,13 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, } from 'react';
 
 import { Button } from '../components';
 import {Link} from 'react-router-dom'
+import { UserType } from '../types';
 import axios from 'axios';
 import img from '../assets/images/sign_in.png'
 import logo from '../assets/images/logo@3x.png'
 import styled from 'styled-components';
+import { useUserDispatch } from '../contexts/UserContext';
 
 const Container = styled.div`
   width: 100%;
@@ -85,38 +87,50 @@ const Logo = styled.div`
 `;
 
 function Page() {
-  const [id, setId] = useState<string>("test1234");
-  const [password, setPassword] = useState<string>("123");
+  const [id, setId] = useState<string>();
+  const [password, setPassword] = useState<string>();
+  const dispatch = useUserDispatch();
 
   const signIn = (): void => {
     if(!id || !password) {
       alert("아이디/비밀번호를 확인해주세요.");
       return;
     }
-
-    let form = new FormData();
-    form.append("id", id);
-    form.append("password", password);
-
-    axios.post('http://localhost:5000/api/user/login', {
-      "id": "test1234",
-      "password": "123"
-  })
-    .then(res => {
-      // const { status } = res;
-      console.log(JSON.stringify(res));
-
-      // 성공할 경우 user state에 담는다.
-      // if(status === 200) {
-      //   alert('로그인 성공');
-      //   return;
-      // }
-
-      // if(status === 401) {
-      //   alert('아이디/비밀번호를 확인해주세요.');
-      // }
+    
+    axios.post('http://192.168.0.12:5000/api/user/login', {
+      id,
+      password,
     })
-  .catch( response => { console.log(response) } );
+    .then(res => {
+      const { status, data } = res;
+      console.log(JSON.stringify(res));
+      console.log(data);
+
+      if(status === 200) {
+        window.localStorage.setItem('user', JSON.stringify({
+          userType: UserType.USER,
+          userId: data.id,
+          profileImage: data.profileImage,
+          userName: data.name,
+          phoneNum: data.phoneNum,
+          storeName: data.storeName,
+          address: data.address,
+          orderIdList: data.orderIdList,
+          cartIdList: data.cartIdList,
+          reviewIdList: data.reviewIdList,
+        }));  
+       
+        window.location.href = '/main/product'
+        return;
+      }
+
+      if(status === 401) {
+        alert('아이디/비밀번호를 확인해주세요.');
+      }
+    })
+    .catch(error => {
+      console.log(error) 
+    });
   };
 
   return (

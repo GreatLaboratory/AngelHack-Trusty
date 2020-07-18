@@ -115,65 +115,106 @@ const ImagePreview = styled.div`
   }
 `;
 
-const ImageUploadButton = styled.button`
-  outline: none;
-  background: none;
+const ImageUploadButton = styled.div`
   border-radius: 10px;
   border: solid 1px #999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 10px 0px;
+
+  label {
+    font-size: 16px;
+    font-weight: 300;
+    color: #999999;
+  }
+  
+  input {
+    position: absolute; 
+    width: 1px; 
+    height: 1px; 
+    padding: 0; 
+    margin: -1px; 
+    overflow: hidden; 
+    clip:rect(0,0,0,0); 
+    border: 0;
+  }
 `;
 
 
 
 function Page() {
   const [userType, setUserType] = useState<UserType>(UserType.USER);
-  const [id, setId] = useState<string>();
-  const [password, setPassword] = useState<string>();
-  const [confirmPassword, setConfirmPassword] = useState<string>();
-  const [image, setImage] = useState<string>();
-  const [name, setName] = useState<string>();
-  const [phoneNum, setPhoneNum] = useState<string>();
-  const [storeName, setStoreName] = useState<string>();
-  const [address, setAddress] = useState<string>();
+  const [id, setId] = useState<string>("jinsun");
+  const [password, setPassword] = useState<string>("123");
+  const [confirmPassword, setConfirmPassword] = useState<string>("123");
+  const [image, setImage] = useState<any>();
+  const [name, setName] = useState<string>("박진선");
+  const [phoneNum, setPhoneNum] = useState<string>("01084685232");
+  const [storeName, setStoreName] = useState<string>("ㅇㅇㅇㅇ");
+  const [address, setAddress] = useState<string>("서울시 영등포구");
   const [verifyNumFromClient, setVerifyNumFromClient] = useState<string>();
+  const [mainItem, setMainItem] = useState<string>();
+  const [productArea, setProductArea] = useState<string>();
 
   const signUp = (): void => {
-    // if(!image || !name || !phoneNum || !password || !storeName || !address) {
-    //   alert('폼을 다 채워주세요 :)');
-    //   return;
-    // }
+    if(!file || !name || !phoneNum || !password || !storeName || !address) {
+      alert('폼을 다 채워주세요 :)');
+      return;
+    }
+
+
 
     if(userType === UserType.USER) {
-      axios.post('http://localhost:5000/api/user/signUp', {
-        image,
-        name,
-        phoneNum,
-        password,
-        storeName,
-        address,
-      })
+      const form = new FormData();
+      form.append('image', file);
+      form.append('id', id);
+      form.append('name', name);
+      form.append('phoneNum', phoneNum);
+      form.append('password', password);
+      form.append('storeName', storeName);
+      form.append('address', address);
+
+      axios.post('http://192.168.0.12:5000/api/user/signUp', form)
       .then(res => {
         console.log(res);
       })
       .catch(error => console.log(error));
     } else {
-      axios.post('/api/user/signUp', {
-        image,
-        name,
-        phoneNum,
-        password,
-        storeName,
-        address,
-      })
+      const form = new FormData();
+      form.append('image', file);
+      form.append('id', id);
+      form.append('name', name);
+      form.append('phoneNum', phoneNum);
+      form.append('password', password);
+      form.append('productArea', (productArea || ''));
+      form.append('mainItem', (mainItem || ''));
+
+      axios.post('http://192.168.0.12:5000/api/seller/signUp', form)
       .then(res => {
         console.log(res);
       })
       .catch(error => console.log(error));
     }
+  }  
+
+  const [file, setFile] = useState<any>();
+  // const [previewURL, setPreviewURL] = useState<string>();
+
+  const handleFileOnChange = (event: any): void => {
+    console.log(event.target.files[0]);
+    event.preventDefault();
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onloadend = () => {
+      setFile(file);
+      setImage(reader.result);
+    }
+    reader.readAsDataURL(file);
   }
 
   const verifyPhoneNumber = (): void => {
-    axios.post('http://localhost:5000/api/user/auth/sendCode', {
+    axios.post('http://192.168.0.12:5000/api/user/auth/sendCode', {
       "phoneNum": phoneNum,
     })
     .then(res => {
@@ -196,7 +237,9 @@ function Page() {
             <ImagePreview>
               <img src={plusIcon} alt="" />
             </ImagePreview>
-            <ImageUploadButton>이미지 업로드</ImageUploadButton>
+            <ImageUploadButton>
+              <label>이미지 업로드<input type="file" accept="image/jpeg, image/png" onChange={(e) => handleFileOnChange(e)}/></label>
+            </ImageUploadButton>
           </Left>
           <Right>
             <div>

@@ -1,5 +1,6 @@
 import Cart from './Cart';
 import Delivery from './Delivery';
+import Detail from './Detail';
 import Discovery from './Discovery';
 import ManagerMain from './ManagerMain';
 import MyPage from './MyPage';
@@ -16,4 +17,5 @@ export {
   Discovery,
   Delivery,
   Cart,
+  Detail,
 };

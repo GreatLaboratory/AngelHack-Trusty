@@ -59,11 +59,13 @@ interface Props {
 }
 
 function SideNavBar(props: Props) {
-  const { location: { pathname} } = useReactRouter();
+  const { location: { pathname } } = useReactRouter();
   const { userType, sidebarItems } = props;
 
   const menuItem = (item: SidebarItemType, index: number): ReactElement => {
-    if(item.path === pathname) {
+    const tmp: string[] = pathname.split('/');
+
+    if(item.path === `/${tmp[1]}`) {
       return (
         <MenuItem key={`item__${index}`}>
           <div className="selected">{item.value}</div>

@@ -18,7 +18,9 @@ import { SidebarItemType, UserType } from './types'
 
 import CustomRoute from './route';
 import { SideNavBar } from './components'
+import { UserContextProvider } from './contexts/UserContext';
 import styled from 'styled-components';
+import { useUserState } from './contexts/UserContext';
 
 const Container = styled.div`
   width: 100vw;
@@ -36,6 +38,10 @@ const SellerRoute = styled.div`
 
 function App() {
   const [authenticated, setAuthenticated] = useState<boolean>(true);
+
+  const state = useUserState();
+
+  console.log(state);
 
   const getAuth = (): void => {
     setAuthenticated(true);
@@ -66,35 +72,36 @@ function App() {
   
   return (
     <Container>
-      <Router>
-        <Switch>
-          <Route path="/auth" component={AuthContainer} />
-          <UserRoute>
-            <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
-            <>
-              <CustomRoute exact authenticated={authenticated} path="/main" page={MainContainer} />
-              <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
-              <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
-              <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
-              {/* <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} /> */}
-              <Redirect from="/" to="/main" />
-            </>
-          </UserRoute>
+      <UserContextProvider>
+        <Router>
+          <Switch>
+            <Route path="/auth" component={AuthContainer} />
+            <UserRoute>
+              <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
+              <>
+                <CustomRoute authenticated={authenticated} path="/main" page={MainContainer} />
+                <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
+                <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
+                <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
+                {/* <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} /> */}
+              </>
+            </UserRoute>
 
-          {/* <SellerRoute>
-            <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
-            <>
-              <CustomRoute exact authenticated={authenticated} path="/manager" page={MainContainer} />
-              <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
-              <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
-              <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
-              <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} />
-              <Redirect from="/" to="/main" />
-            </>
-          </SellerRoute> */}
-          <Route component={NotFound} />
-        </Switch>
-      </Router>
+            {/* <SellerRoute>
+              <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
+              <>
+                <CustomRoute exact authenticated={authenticated} path="/manager" page={MainContainer} />
+                <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
+                <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
+                <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
+                <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} />
+                <Redirect from="/" to="/main" />
+              </>
+            </SellerRoute> */}
+            <Route component={NotFound} />
+          </Switch>
+        </Router>
+      </UserContextProvider>
     </Container>
   );
 }

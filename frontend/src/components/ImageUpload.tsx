@@ -4,10 +4,10 @@ import styled from 'styled-components';
 
 const Container = styled.div``;
 
-function Page() {
+function ImageUpload() {
   return (
-    <Container>Cart</Container>
+    <Container>template</Container>
   );
 }
 
-export default Page;
+export default ImageUpload;
