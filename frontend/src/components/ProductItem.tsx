@@ -107,7 +107,7 @@ const Row = styled.div`
 interface Props {
   item: ProductItemType;
   containerStyle?: CSSProperties;
-  clickCart?: () => void;
+  clickCart: (item: ProductItemType) => void;
 }
 
 function Shared(props: Props) {
@@ -123,13 +123,14 @@ function Shared(props: Props) {
   
   return (
     <Container style={containerStyle} key={`item__${item.prouductId}`}>
-      <Link to={`/main/product/detail?id=${item.prouductId}`} style={{ width: '100%', height: '100%', textDecoration: 'none' }}>
       <Wrapper>
+      <Link to={`/main/product/detail?id=${item.prouductId}`} style={{ width: '100%', height: '100%', textDecoration: 'none' }}>
         <ProductImage>
           <img  src={item.productImage} alt="" />
         </ProductImage>
         <Price>{item.price}원/k</Price>
         <Title>{getTitle(item.productTitle)}</Title>
+        </Link>
         <Row>
           <div className="left">
             <img src={item.sellerProfileImage} alt="" />
@@ -139,11 +140,11 @@ function Shared(props: Props) {
             </div>
           </div>
           <div className="right">
-            <button onClick={clickCart}>장바구니</button>
+            <button onClick={(): void => clickCart(item)}>장바구니</button>
           </div>
         </Row>
       </Wrapper>
-      </Link>
+     
     </Container>
   );
 }

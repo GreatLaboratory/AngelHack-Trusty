@@ -145,54 +145,62 @@ const ImageUploadButton = styled.div`
 
 function Page() {
   const [userType, setUserType] = useState<UserType>(UserType.USER);
-  const [id, setId] = useState<string>("jinsun");
-  const [password, setPassword] = useState<string>("123");
-  const [confirmPassword, setConfirmPassword] = useState<string>("123");
+  const [id, setId] = useState<string>();
+  const [password, setPassword] = useState<string>();
+  const [confirmPassword, setConfirmPassword] = useState<string>();
   const [image, setImage] = useState<any>();
-  const [name, setName] = useState<string>("박진선");
-  const [phoneNum, setPhoneNum] = useState<string>("01084685232");
-  const [storeName, setStoreName] = useState<string>("ㅇㅇㅇㅇ");
-  const [address, setAddress] = useState<string>("서울시 영등포구");
+  const [name, setName] = useState<string>();
+  const [phoneNum, setPhoneNum] = useState<string>();
+  const [storeName, setStoreName] = useState<string>();
+  const [address, setAddress] = useState<string>();
   const [verifyNumFromClient, setVerifyNumFromClient] = useState<string>();
   const [mainItem, setMainItem] = useState<string>();
   const [productArea, setProductArea] = useState<string>();
 
   const signUp = (): void => {
-    if(!file || !name || !phoneNum || !password || !storeName || !address) {
-      alert('폼을 다 채워주세요 :)');
-      return;
-    }
-
-
+    // if(!file || !name || !phoneNum || !password || !storeName || !address || !id) {
+    //   alert('폼을 다 채워주세요 :)');
+    //   return;
+    // }
 
     if(userType === UserType.USER) {
       const form = new FormData();
       form.append('image', file);
-      form.append('id', id);
-      form.append('name', name);
-      form.append('phoneNum', phoneNum);
-      form.append('password', password);
-      form.append('storeName', storeName);
-      form.append('address', address);
+      form.append('id', (id || ''));
+      form.append('name', (name || ''));
+      form.append('phoneNum', (phoneNum || ''));
+      form.append('password', (password || ''));
+      form.append('storeName', (storeName || ''));
+      form.append('address', (address || ''));
 
-      axios.post('http://192.168.0.12:5000/api/user/signUp', form)
+      axios.post('http://localhost:5000/api/user/signUp', form)
       .then(res => {
         console.log(res);
+        if(res.status === 201) {
+          alert('회원가입 성공!');
+          window.location.href = 'http://localhost:3000/auth'
+        }
       })
       .catch(error => console.log(error));
     } else {
       const form = new FormData();
       form.append('image', file);
-      form.append('id', id);
-      form.append('name', name);
-      form.append('phoneNum', phoneNum);
-      form.append('password', password);
+      form.append('id', (id || ''));
+      form.append('name', (name || ''));
+      form.append('phoneNum', (phoneNum || ''));
+      form.append('password', (password || ''));
       form.append('productArea', (productArea || ''));
       form.append('mainItem', (mainItem || ''));
+      form.append('accountNum', ('210-123456-54321'));
+      form.append('bankName', ('국민은행'));
 
-      axios.post('http://192.168.0.12:5000/api/seller/signUp', form)
+      axios.post('http://localhost:5000/api/seller/signUp', form)
       .then(res => {
         console.log(res);
+        if(res.status === 201) {
+          alert('회원가입 성공!');
+          window.location.href = 'http://localhost:3000/auth'
+        }
       })
       .catch(error => console.log(error));
     }
@@ -214,7 +222,7 @@ function Page() {
   }
 
   const verifyPhoneNumber = (): void => {
-    axios.post('http://192.168.0.12:5000/api/user/auth/sendCode', {
+    axios.post('http://localhost:5000/api/user/auth/sendCode', {
       "phoneNum": phoneNum,
     })
     .then(res => {
@@ -235,7 +243,12 @@ function Page() {
           <Left>
             <div>회원가입</div>
             <ImagePreview>
-              <img src={plusIcon} alt="" />
+              {
+                image
+                ? <img src={image} alt="" style={{ width: '100%', height: '100%', borderRadius: 10 }} />
+                : <img src={plusIcon} alt="" />
+              }
+              
             </ImagePreview>
             <ImageUploadButton>
               <label>이미지 업로드<input type="file" accept="image/jpeg, image/png" onChange={(e) => handleFileOnChange(e)}/></label>
@@ -285,7 +298,7 @@ function Page() {
                 onChange={(e): void => setPhoneNum(e.target.value)} 
                 style={{ marginRight: 10 }}
               />
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
+              {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <Button value="본인인증" click={signUp}  containerStyle={{ fontSize: 16, padding: 10, height: '100%' }}/>
                 <Input 
                   type="text" 
@@ -294,7 +307,7 @@ function Page() {
                   onChange={(e): void => setVerifyNumFromClient(e.target.value)} 
                   style={{  marginLeft: 10 }}
                 />
-              </div>
+              </div> */}
               
             </RowWrapper>
             <RowWrapper>
@@ -317,8 +330,8 @@ function Page() {
               <Input 
                 type="text" 
                 placeholder="주요품목을 입력해주세요." 
-                value={confirmPassword} 
-                onChange={(e): void => setConfirmPassword(e.target.value)} 
+                value={mainItem} 
+                onChange={(e): void => setMainItem(e.target.value)} 
                 style={{ flex: 1 }}
               />
             </RowWrapper>

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import useReactRouter from 'use-react-router';
 
 const Container = styled.div`
-  height: 100vh;
+  height: 200vh;
   background-color: #00a457;
   padding: 40px;
 `;
@@ -111,8 +111,6 @@ function SideNavBar(props: Props) {
         </Container>
       );
   }
-  
- 
 }
 
 export default SideNavBar;

@@ -33,6 +33,7 @@ function userReducer(state: UserState, action: Action): UserState {
       return {
         ...state,
         user: {
+          _id: "12",
           userType: 6,
           userId: 'id',
           profileImage: 'data.profileImage',
@@ -54,6 +55,7 @@ function userReducer(state: UserState, action: Action): UserState {
 export function UserContextProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(userReducer, {
     user: {
+      _id: "12",
       userType: 1,
       userId: 'id',
       profileImage: 'data.profileImage',

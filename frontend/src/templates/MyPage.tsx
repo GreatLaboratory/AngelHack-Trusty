@@ -16,13 +16,14 @@ const Title = styled.div`
 const Info = styled.div`
   font-size: 20px;
   color: #333333;
+  margin-bottom: 20px;
 `;
 
 const Content = styled.div`
   padding: 20px;
   background-color: #efefef;
   border-radius: 10px;
-  margin: 20px 0px;
+  margin-bottom: 20px;
 
   .row {
     margin-bottom: 20px;
@@ -33,6 +34,7 @@ const Content = styled.div`
 
     .title {
       width: 100px;
+      margin-right: 10px;
     }
 
     .content {
@@ -68,6 +70,7 @@ function Page() {
       const tmp = JSON.parse(stringUser);
       console.log(tmp);
       setUser({
+        _id: tmp._id,
         userType: tmp.userType,
         userId: tmp.id,
         profileImage: tmp.profileImage,

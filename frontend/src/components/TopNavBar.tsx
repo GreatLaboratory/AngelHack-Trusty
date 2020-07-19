@@ -14,6 +14,11 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 
+const NavWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 const NavItem = styled.div`
   width: 250px;
 
@@ -52,10 +57,12 @@ const Row = styled.div`
   margin-right: 20px;
 
   div {
+    margin-right: 5px;
     .store {
       font-size: 19px;
       font-weight: 500;
       color: #999999;
+      text-align: right;
     }
 
     .name {
@@ -66,8 +73,8 @@ const Row = styled.div`
   }
 
   img {
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
     border-radius: 30px;
   }
 `;
@@ -84,11 +91,13 @@ function Shared(props: Props) {
 
   const getUser = (): void => {
     const stringUser = window.localStorage.getItem("user");
+    // const tmp = JSON.parse(window.localStorage.getItem("user")).address;
 
     if(stringUser) {
       const tmp = JSON.parse(stringUser);
       console.log(tmp);
       setUser({
+        _id: tmp._id,
         userType: tmp.userType,
         userId: tmp.id,
         profileImage: tmp.profileImage,
@@ -127,13 +136,13 @@ function Shared(props: Props) {
   
   return (
     <Container>
-      <>
+      <NavWrapper>
       {topNavItems.map((item, index) => topNavItem(item, index))}
-      </>
+      </NavWrapper>
       <Row>
         <div>
-          <div className="store">{user?.storeName}</div>
-          <div className="name">{user?.userName}</div>
+          <div className="store">{(user?.storeName || '경북구미')}</div>
+          <div className="name">{user?.userName} 사장님</div>
         </div>
         <img src={user?.profileImage} alt="" />
       </Row>

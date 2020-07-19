@@ -86,9 +86,32 @@ const Logo = styled.div`
   }
 `;
 
+const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+`;
+
+const UserTypeButton = styled.button` 
+  width: 50px;
+  height: 50px;
+  outline: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: ${props => props.color || "#00a457"};
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+`;
+
 function Page() {
   const [id, setId] = useState<string>();
   const [password, setPassword] = useState<string>();
+  const [userType, setUserType] = useState<UserType>(UserType.USER);
+
   const dispatch = useUserDispatch();
 
   const signIn = (): void => {
@@ -96,41 +119,77 @@ function Page() {
       alert("아이디/비밀번호를 확인해주세요.");
       return;
     }
-    
-    axios.post('http://192.168.0.12:5000/api/user/login', {
-      id,
-      password,
-    })
-    .then(res => {
-      const { status, data } = res;
-      console.log(JSON.stringify(res));
-      console.log(data);
 
-      if(status === 200) {
-        window.localStorage.setItem('user', JSON.stringify({
-          userType: UserType.USER,
-          userId: data.id,
-          profileImage: data.profileImage,
-          userName: data.name,
-          phoneNum: data.phoneNum,
-          storeName: data.storeName,
-          address: data.address,
-          orderIdList: data.orderIdList,
-          cartIdList: data.cartIdList,
-          reviewIdList: data.reviewIdList,
-        }));  
-       
-        window.location.href = '/main/product'
-        return;
-      }
-
-      if(status === 401) {
+    if(userType === UserType.USER) {
+      axios.post('http://localhost:5000/api/user/login', {
+        id,
+        password,
+      })
+      .then(res => {
+        const { status, data } = res;
+        console.log(JSON.stringify(res));
+        console.log(data);
+  
+        if(status === 200) {
+          window.localStorage.setItem('user', JSON.stringify({
+            _id: data._id,
+            userType: UserType.USER,
+            userId: data.id,
+            profileImage: data.profileImage,
+            userName: data.name,
+            phoneNum: data.phoneNum,
+            storeName: data.storeName,
+            address: data.address,
+            orderIdList: data.orderIdList,
+            cartIdList: data.cartIdList,
+            reviewIdList: data.reviewIdList,
+          }));  
+         
+          window.location.href = '/main/product'
+          return;
+        }
+      })
+      .catch(error => {
         alert('아이디/비밀번호를 확인해주세요.');
-      }
-    })
-    .catch(error => {
-      console.log(error) 
-    });
+        
+        console.log(error) 
+      });
+
+    }else {
+      axios.post('http://localhost:5000/api/seller/login', {
+        id,
+        password,
+      })
+      .then(res => {
+        const { status, data } = res;
+        console.log(JSON.stringify(res));
+        console.log(data);
+  
+        if(status === 200) {
+          window.localStorage.setItem('user', JSON.stringify({
+            _id: data._id,
+            userType: UserType.SELLER,
+            userId: data.id,
+            profileImage: data.profileImage,
+            userName: data.name,
+            phoneNum: data.phoneNum,
+            bankName: data.bankName,
+            accountNum: data.accountNum,
+            address: data.address,
+          }));  
+         
+          window.location.href = '/manager'
+          return;
+        }
+      })
+      .catch(error => {
+        alert('아이디/비밀번호를 확인해주세요.');
+        
+        console.log(error) 
+      });
+    }
+    
+
   };
 
   return (
@@ -143,6 +202,16 @@ function Page() {
           <FormWrapper>
             <div className="input-wrapper">
               <div className="title">로그인</div>
+                <RowWrapper>
+                <UserTypeButton 
+                  onClick={(): void => setUserType(UserType.USER)}
+                  style={{ marginRight: 10 }} 
+                  color={userType === UserType.USER ? undefined : '#cccccc' }>소상공인</UserTypeButton>
+                <UserTypeButton 
+                  onClick={(): void => setUserType(UserType.SELLER)}
+                  color={userType === UserType.SELLER ? undefined : '#cccccc' }>영농인</UserTypeButton>
+              </RowWrapper>
+
               <input type="text" placeholder="아이디를 입력해주세요." onChange={e => setId(e.target.value)} value={id} />
               <input type="password" placeholder="비밀번호를 입력해주세요." onChange={e => setPassword(e.target.value)} value={password} />
             </div>

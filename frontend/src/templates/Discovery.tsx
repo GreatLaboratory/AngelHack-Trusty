@@ -1,8 +1,9 @@
-import { CategoryType, ProductItemType, SortType, categoryItem } from '../types'
+import { CategoryType, ProductItemType, SortType, User, categoryItem } from '../types'
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { ProductItem } from '../components'
+import axios from 'axios';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import useReactRouter from 'use-react-router';
@@ -96,68 +97,112 @@ const CategoryItem = styled.button`
 function Page(props: RouteComponentProps) {
   const { location: { pathname } } = useReactRouter();
 
-  const productItems: ProductItemType[] = [
-    {
-      prouductId: 1,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영ㅁㅇㄹㅁㄴㄹㅁㅇㄹㄴㅇㄹ농',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-    {
-      prouductId: 2,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영농조합 해남 절임배추',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-    {
-      prouductId: 3,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영농조합 해남 절임배추',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-    {
-      prouductId: 4,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영농조합 해남 절임배추',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-    {
-      prouductId: 5,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영농조합 해남 절임배추',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-    {
-      prouductId: 6,
-      productImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      price: 20000,
-      productTitle: '해남들 영농조합 해남 절임배추',
-      sellerProfileImage: 'http://black-up.kr/web/product/big/20200601/efc1cc4dfa7936daf82c12d9aef9400e.jpg',
-      location: '전남 해남',
-      sellerName: '백진욱',
-    },
-  ];
+  const [user, setUser] = useState<User>();
+
+  const getUser = (): void => {
+    const stringUser = window.localStorage.getItem("user");
+
+    if(stringUser) {
+      const tmp = JSON.parse(stringUser);
+      console.log(tmp);
+      setUser({
+        _id: tmp._id,
+        userType: tmp.userType,
+        userId: tmp.id,
+        profileImage: tmp.profileImage,
+        userName: tmp.userName,
+        phoneNum: tmp.phoneNum,
+        storeName: tmp.storeName,
+        address: tmp.address,
+        orderIdList: tmp.orderIdList,
+        cartIdList: tmp.cartIdList,
+        reviewIdList: tmp.reviewIdList,
+      });
+    }
+  }
+
+  const [productItems, setProductItems] = useState<ProductItemType[]>();
+
+  const fetchProductItem = (): void => {
+    axios.get('http://localhost:5000/api/product/list')
+    .then(res => {
+      const { status, data } = res;
+
+      if (status === 200) {
+        const tmpProductItems: ProductItemType[] = [];
+        data.forEach((item: any, index: number) => {
+          tmpProductItems.push({
+            prouductId: item._id,
+            productImage: item.mainImage,
+            price: item.price,
+            productTitle: item.name,
+            sellerProfileImage: item.sellerId.profileImage,
+            location: item.productArea,
+            sellerName: item.sellerId.name,
+          });
+        })
+        setProductItems(tmpProductItems);
+      }
+    })
+    .catch(error => console.log(error));
+  }
+
+  const query = queryString.parse(props.location.search);
+
+  useEffect(() => {
+    getUser();
+    
+    if(query.sort) {
+      if(query.category) {
+
+      }else {
+
+      }
+      return;
+    }
+    if(query.category) {
+
+      return;
+    }
+    fetchProductItem();
+  }, []);
+
+  const requestPostCart = (item: ProductItemType): void => {
+    try {
+      if(user?._id) {
+        axios.post(`http://localhost:5000/api/order/takeInCart/${user?._id}`, {
+          productId: item.prouductId,
+          orderNum: '1', // 장바구니에 담기니까 일단 1개
+          orderPrice: item.price,
+        })
+        .then(res => {
+          const { status, data } = res;
+
+          if (status === 200) {
+            console.log(data);
+            const newUser = {
+              ...user,
+              orderIdList: [...user.orderIdList, data.productId]
+            }
+
+            window.localStorage.setItem('user', JSON.stringify(newUser));
+          }
+          alert('장바구니에 담았습니다 :)');
+        })
+        .catch(error => console.log(error));
+      }
+      
+    }catch (error) {
+      console.log(error);
+    }
+  }
 
 
   const productItemsRow = (items: ProductItemType[], i: number): ReactElement => {
     return (
       <RowWrapper key={`item__${i}`}>
-        {items.map((item, index) => <ProductItem key={`item${index}`} item={item} clickCart={(): void => alert('장바구니에 담겼습니다.')} />)}
+        {items.map((item, index) => <ProductItem key={`item${index}`} item={item} clickCart={(): void => requestPostCart(item)} 
+        />)}
       </RowWrapper>
     );
   }
@@ -165,20 +210,23 @@ function Page(props: RouteComponentProps) {
   const productItemsElement = (): ReactElement[] => {
     let rtn: ReactElement[] = [];
 
-    for (let i=0; i<=productItems.length/5; i++) {
-      let end = i*5 + 5;
-      if(i === productItems.length/5) {
-        end = productItems.length;
-      }
-      const tmpItems = productItems.slice(i*5, end);
+    const length = productItems?.length || 0;
 
-      rtn = [...rtn,productItemsRow(tmpItems, i)];
+    for (let i=0; i<=length/5; i++) {
+      let end = i*5 + 5;
+      if(i === length/5) {
+        end = length;
+      }
+      const tmpItems = productItems?.slice(i*5, end);
+
+      if(tmpItems) {
+        rtn = [...rtn,productItemsRow(tmpItems, i)];
+      }
     }
 
     return rtn;
   }
 
-  const query = queryString.parse(props.location.search);
 
 
   // Related to sort
@@ -325,7 +373,7 @@ function Page(props: RouteComponentProps) {
         },
 {
           categoryId: 6,
-          value: '깐마늘(국산)',
+          value: '깐마늘',
         },
 {
           categoryId: 6,
@@ -505,8 +553,7 @@ function Page(props: RouteComponentProps) {
       ]
     }
   ];
-
-  // Related to category
+  
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>();
 
   const requestItemsByCategory = (categoryValue: string): void => {
@@ -518,7 +565,7 @@ function Page(props: RouteComponentProps) {
   }
 
   const categoryItem = (item: categoryItem, index: number): ReactElement => {
-    if(item.categoryId.toString() === query.category) {
+    if(item.value.toString() === query.category) {
       return(
         <CategoryItem key={`item__${index}`}>
           <div className="selected">{item.value}</div>

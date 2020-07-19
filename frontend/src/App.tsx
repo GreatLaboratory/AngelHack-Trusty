@@ -14,7 +14,7 @@ import {
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom';
-import { SidebarItemType, UserType } from './types'
+import { SidebarItemType, User, UserType } from './types'
 
 import CustomRoute from './route';
 import { SideNavBar } from './components'
@@ -41,16 +41,6 @@ function App() {
 
   const state = useUserState();
 
-  console.log(state);
-
-  const getAuth = (): void => {
-    setAuthenticated(true);
-  }
-  
-  useEffect(() => {
-    getAuth();
-  }, []);
-
   const sidebarItems: SidebarItemType[] = [
     {
       value: '식재료 구매',
@@ -61,14 +51,48 @@ function App() {
       path: '/delivery',
     },
     {
-      value: '고객센터',
-      path: '/service',
-    },
-    {
       value: '마이페이지',
       path: '/mypage',
     }
   ];
+
+  const managerSidebarItems: SidebarItemType[] = [
+    {
+      value: '판매글 등록하기',
+      path: '/manager',
+    },
+    {
+      value: '마이페이지',
+      path: '/mypage',
+    },
+  ];
+
+  const [user, setUser] = useState<User>();
+
+  const getUser = (): void => {
+    const stringUser = window.localStorage.getItem("user");
+
+    if(stringUser) {
+      const tmp = JSON.parse(stringUser);
+      setUser({
+        _id: tmp._id,
+        userType: tmp.userType,
+        userId: tmp.id,
+        profileImage: tmp.profileImage,
+        userName: tmp.userName,
+        phoneNum: tmp.phoneNum,
+        storeName: tmp.storeName,
+        address: tmp.address,
+        orderIdList: tmp.orderIdList,
+        cartIdList: tmp.cartIdList,
+        reviewIdList: tmp.reviewIdList,
+      });
+    }
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
   
   return (
     <Container>
@@ -77,27 +101,14 @@ function App() {
           <Switch>
             <Route path="/auth" component={AuthContainer} />
             <UserRoute>
-              <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
+              <SideNavBar userType={UserType.USER} sidebarItems={user?.userType === UserType.USER ? sidebarItems : managerSidebarItems} />
               <>
                 <CustomRoute authenticated={authenticated} path="/main" page={MainContainer} />
                 <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
-                <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
-                <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
-                {/* <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} /> */}
-              </>
-            </UserRoute>
-
-            {/* <SellerRoute>
-              <SideNavBar userType={UserType.USER} sidebarItems={sidebarItems} />
-              <>
-                <CustomRoute exact authenticated={authenticated} path="/manager" page={MainContainer} />
-                <CustomRoute authenticated={authenticated} path="/delivery" page={DeliveryContainer} />
-                <CustomRoute authenticated={authenticated} path="/service" page={ServiceContainer} />
                 <CustomRoute authenticated={authenticated} path="/mypage" page={MyPageContainer} />
                 <CustomRoute authenticated={authenticated} path="/manager" page={ManagerContainer} />
-                <Redirect from="/" to="/main" />
               </>
-            </SellerRoute> */}
+            </UserRoute>
             <Route component={NotFound} />
           </Switch>
         </Router>

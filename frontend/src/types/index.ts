@@ -11,6 +11,7 @@ export type AuthenticatedType = {
 }
 
 export type User = {
+  _id: string;
   userType: UserType;
   userId: string;
   profileImage: string; 
@@ -40,9 +41,9 @@ export type SellerInfoType = {
 }
 
 export type ProductItemType = {
-  prouductId: number; 
+  prouductId: string; 
   productImage: string;
-  price: number;
+  price: string;
   productTitle: string;
 } & SellerInfoType;
 
@@ -56,6 +57,16 @@ export type CategoryType = {
   items: categoryItem[];
 }
 
+export type CartType = {
+  cartId: string;
+  productImage: string;
+  productId: string;
+  productName: string;
+  productPrice: string;
+  orderNum: string;
+  orderPrice: string;
+}
+
 export enum UserType {
   USER,
   SELLER,
@@ -67,4 +78,3 @@ export enum SortType {
   UPPER_PRICE = 2,
   SHORT_DISTANCE = 3,
 }
-

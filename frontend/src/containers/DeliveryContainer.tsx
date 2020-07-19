@@ -1,7 +1,7 @@
-import { Cart, Detail, Discovery } from '../templates';
 import React, { ReactElement } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
+import { Delivery } from '../templates';
 import { TopNavBar } from '../components'
 import { TopNavItemType } from '../types'
 import styled from 'styled-components';
@@ -26,6 +26,7 @@ function Page(props: RouteComponentProps) {
   return (
     <Container>
       <TopNavBar topNavItems={topNavItems} />
+      <Delivery />
     </Container>
   );
 }
